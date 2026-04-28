@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "413283102750",
+    "project_id": "dormbnb-3d1db",
+    "storage_bucket": "dormbnb-3d1db.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:413283102750:android:1c6146194e69f30ace7e0f",
+        "android_client_info": {
+          "package_name": "com.example.dormbnb"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzgNF4v1vnmjTOmyS4wgO8uUJpKsa4vKg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

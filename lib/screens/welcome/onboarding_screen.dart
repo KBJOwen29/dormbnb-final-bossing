@@ -1,0 +1,225 @@
+import 'package:flutter/material.dart';
+import '../auth/landing_screen.dart';
+
+
+class OnboardingScreen extends StatefulWidget {
+  const OnboardingScreen({super.key});
+
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> {
+  final PageController _pageController = PageController(initialPage: 0);
+  int _currentPage = 0;
+
+  // Data structure for our onboarding pages
+  final List<Map<String, String>> onboardingData = [
+    {
+      "image": "lib/assets/images/OnboardingI.png",
+      "title": "Find Your Perfect Dorm Near Campus",
+      "description": "Browse verified dorms close to your university with transparent pricing, photos, and real student reviews.",
+    },
+    {
+      "image": "lib/assets/images/OnboardingII.png",
+      "title": "KYC-Verified Landlords & Students",
+      "description": "Every landlord and tenant goes through identity verification so you know exactly who you're dealing with. No more guessing.",
+    },
+    {
+      "image": "lib/assets/images/OnboardingIII.png",
+      "title": "Book & Pay Safely, All in One Place",
+      "description": "Reserve your dorm, pay your deposit, and track your billing digitally secured through our DormBNB.",
+    },
+  ];
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  // Temporary placeholder for final action as requested for future data hookups
+  Future<void> _completeOnboarding() async {
+    // TODO: Colleague can add SharedPreferences here to mark onboarding as seen
+    debugPrint("Onboarding Complete. Navigating to Landing Screen...");
+
+    // Send them to authenticate first!
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LandingScreen()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        top: false, // Let the blue image area hit the very top of the screen
+        child: Column(
+          children: [
+            // PAGE VIEW
+            Expanded(
+              child: PageView.builder(
+                controller: _pageController,
+                onPageChanged: (value) {
+                  setState(() {
+                    _currentPage = value;
+                  });
+                },
+                itemCount: onboardingData.length,
+                itemBuilder: (context, index) => OnboardingContent(
+                  image: onboardingData[index]["image"]!,
+                  title: onboardingData[index]["title"]!,
+                  description: onboardingData[index]["description"]!,
+                ),
+              ),
+            ),
+
+            // BOTTOM NAVIGATION (Dots and Button)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // DOT INDICATORS
+                  Row(
+                    children: List.generate(
+                      onboardingData.length,
+                          (index) => buildDot(index: index),
+                    ),
+                  ),
+
+                  // NEXT / GET STARTED BUTTON
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_currentPage == onboardingData.length - 1) {
+                        _completeOnboarding();
+                      } else {
+                        _pageController.nextPage(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.ease,
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4A8BFE), // Bright Blue
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _currentPage == onboardingData.length - 1
+                              ? "Get Started"
+                              : "Next",
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Nunito',
+                          ),
+                        ),
+                        if (_currentPage != onboardingData.length - 1) ...[
+                          const SizedBox(width: 4),
+                          const Icon(Icons.arrow_forward, size: 18),
+                        ]
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Widget to build the active/inactive dots
+  AnimatedContainer buildDot({required int index}) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      margin: const EdgeInsets.only(right: 8),
+      height: 10,
+      width: _currentPage == index ? 28 : 10, // Pill shape if active, circle if inactive
+      decoration: BoxDecoration(
+        color: _currentPage == index
+            ? const Color(0xFF4A8BFE) // Active Blue
+            : const Color(0xFFD9D9D9), // Inactive Grey
+        borderRadius: BorderRadius.circular(5),
+      ),
+    );
+  }
+}
+
+// Widget for the actual content of each page
+class OnboardingContent extends StatelessWidget {
+  final String image;
+  final String title;
+  final String description;
+
+  const OnboardingContent({
+    super.key,
+    required this.image,
+    required this.title,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // TOP IMAGE AREA
+        // Flexible ensures the image takes up the top half gracefully on any screen size
+        Flexible(
+          flex: 5,
+          child: SizedBox(
+            width: double.infinity,
+            child: Image.asset(
+              image,
+              fit: BoxFit.cover, // Ensures the blue background of the image fills the area
+            ),
+          ),
+        ),
+
+        // BOTTOM TEXT AREA
+        Flexible(
+          flex: 4,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    fontFamily: 'Nunito',
+                    color: Color(0xFF1A1A1A),
+                    height: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Color(0xFF666666),
+                    height: 1.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
